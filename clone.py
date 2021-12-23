@@ -2,7 +2,7 @@
 from pprint import pprint
 from netlab import enums
 
-async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podStop,replacePod):
+async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podStop,replacePod,replacePodNum):
     pc_clone_specs =[]
 
 
@@ -21,6 +21,7 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             MasterPodId = i["pod_id"]
             
     #Get information for current pod to clone
+    cnt = 0
     for currentPod in range(podStart,podStop):
         for pod in pods:
             if pod["pod_name"]==f"{newPodName}{currentPod}":
@@ -32,10 +33,14 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
         if replacePod:
              CurrentPodId = CurrentPodId
         elif not replacePod:
-             #Get next available pod ID number
-             pods = await connection.pod_list()
-             nextAvailablePodID = pods[-1]["pod_id"]+1
-             CurrentPodId = nextAvailablePodID
+            if replacePodNum == 0:
+                #Get next available pod ID number
+                pods = await connection.pod_list()
+                nextAvailablePodID = pods[-1]["pod_id"]+1
+                CurrentPodId = nextAvailablePodID
+            else:
+                CurrentPodId = replacePodNum + cnt
+        cnt += 1
 
         #Parse throug master pod for cloning paramaters
         p = await connection.pod_get(pod_id=MasterPodId, properties='all')
@@ -93,6 +98,8 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             acls = await connection.pod_acl_add(com_id=1, pod_id=CurrentPodId, acc_id=None, cls_id=cls_id, team=None)
         except:
             print('Duplicate ACL found. Skipping...')
+
+
 
 
         

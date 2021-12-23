@@ -22,6 +22,7 @@ async def main():
     podStart = int(config['DEFAULT']['podStart']) #THIS SHOULD NEVER BE 1!
     podStop = int(config['DEFAULT']['podStop'])
     replacePod = bool(config['DEFAULT']['replacePod']) #true if you want to replace existing pod, false if you want to create new pod
+    replacePodNum = bool(config['DEFAULT']['replacePodNum'])
     
     async with NetlabClient() as connection:
         #Test connection/auth is working properly
@@ -34,7 +35,7 @@ async def main():
 
         #Clone PODs
         await podState.bringPodDown(connection,newPodName,podStart,podStop)
-        await clonePod(connection,masterPodName,datastore,newPodName,podStart,podStop,replacePod)
+        await clonePod(connection,masterPodName,datastore,newPodName,podStart,podStop,replacePod,replacePodNum)
 
         #Bring pod up/down
         await podState.bringPodUp(connection,newPodName,podStart,podStop)
