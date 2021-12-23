@@ -3,9 +3,7 @@ from pprint import pprint
 from netlab import enums
 
 async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podStop,replacePod,replacePodNum):
-    pc_clone_specs =[]
-
-
+    #Checking to ensure master pod is not deleted
     if podStart < 2:
         print('podStart cannot be 1 of less!')
         return
@@ -44,7 +42,20 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
         print('='*20 + f'Cloning to pod ID: {CurrentPodId}' + '='*20)
         cnt += 1
 
+        ans = input(f'**********\nWARNING: You are about to delete pod:{OldCurrentPodId}. podName:{podName}. Do you wish to continue?\n**********(y/n)')
+        if ans.lower() != 'y':
+            print('[]Operation aborted due to use cancelation')
+            return
+        #Remove old pod
+        await connection.pod_state_change(pod_id=OldCurrentPodId, state=enums.PodState.OFFLINE)
+        await connection.pod_remove_task(pod_id=OldCurrentPodId, remove_vms=enums.RemoveVMS.DISK)
+        print(f'[+]Successfully removed pod {CurrentPodId}')
+
+
+        #Clone pod
+        print('='*20 + 'Passing pod parameters for cloning' + '='*20 )
         #Parse throug master pod for cloning paramaters
+        pc_clone_specs =[]
         p = await connection.pod_get(pod_id=MasterPodId, properties='all')
         for j in p['remote_pc']:
             tmp = {}
@@ -60,20 +71,9 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             tmp['clone_storage_alloc'] = 'ONDEMAND'
             tmp['clone_snapshot'] = 'init'
             pc_clone_specs.append(tmp)
+            print('[+]Master pod parsed successfully')
+            pprint(pc_clone_specs)
         
-        ans = input(f'**********\nWARNING: You are about to delete pod:{OldCurrentPodId}. podName:{podName}. Do you wish to continue?\n**********(y/n)')
-        if ans.lower() != 'y':
-            print('[]Operation aborted due to use cancelation')
-            return
-        #Remove old pod
-        await connection.pod_state_change(pod_id=OldCurrentPodId, state=enums.PodState.OFFLINE)
-        await connection.pod_remove_task(pod_id=OldCurrentPodId, remove_vms=enums.RemoveVMS.DISK)
-        print(f'[+]Successfully removed pod {CurrentPodId}')
-
-
-        #Clone pod
-        print('='*20 + 'Passing pod parameters for cloning' + '='*20 )
-        pprint(pc_clone_specs)
         try:     
             info = await connection.pod_clone_task(source_pod_id=MasterPodId,clone_pod_id=CurrentPodId,
                                                            clone_pod_name=f"{newPodName}{currentPod}",pc_clone_specs=pc_clone_specs)
@@ -101,9 +101,6 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
         except:
             print('Duplicate ACL found. Skipping...')
 
-
-
-
-        
+       
     print('complete?')
 
