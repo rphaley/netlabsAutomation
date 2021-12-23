@@ -19,11 +19,11 @@ async def main():
     masterPodName = config['DEFAULT']['masterPodName']
     datastore = config['DEFAULT']['datastore']
     newPodName = config['DEFAULT']['newPodName']
-    podStart = int(config['DEFAULT']['podStart']) #THIS SHOULD NEVER BE 1!
-    podStop = int(config['DEFAULT']['podStop'])
-    replacePod = bool(config['DEFAULT']['replacePod']) #true if you want to replace existing pod, false if you want to create new pod
-    replacePodNum = bool(config['DEFAULT']['replacePodNum'])
-    
+    podStart = config['DEFAULT'].getint('podStart') #THIS SHOULD NEVER BE 1!
+    podStop = config['DEFAULT'].getint('podStop')
+    replacePod = config['DEFAULT'].getboolean('replacePod') #true if you want to replace existing pod, false if you want to create new pod
+    replacePodNum = config['DEFAULT'].getint('replacePodNum')
+
     async with NetlabClient() as connection:
         #Test connection/auth is working properly
         try:
