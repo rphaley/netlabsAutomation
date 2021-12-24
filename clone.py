@@ -72,7 +72,7 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             tmp['clone_snapshot'] = 'init'
             pc_clone_specs.append(tmp)
             print('[+]Master pod parsed successfully')
-            pprint(pc_clone_specs)
+        pprint(pc_clone_specs)
         
         try:     
             info = await connection.pod_clone_task(source_pod_id=MasterPodId,clone_pod_id=CurrentPodId,
