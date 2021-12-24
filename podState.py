@@ -10,8 +10,8 @@ async def bringPodUp(connection,newPodName,podStart,podStop):
                 CurrentPodId = pod["pod_id"]
                 print(podName)
 
-    await connection.pod_state_change(pod_id=CurrentPodId, state=enums.PodState.ONLINE)
-    print(f'[+]{podName} brought online!')
+                await connection.pod_state_change(pod_id=CurrentPodId, state=enums.PodState.ONLINE)
+                print(f'[+]{podName} brought online!')
           
 async def bringPodDown(connection,newPodName,podStart,podStop):
     pods = await connection.pod_list()
@@ -22,6 +22,6 @@ async def bringPodDown(connection,newPodName,podStart,podStop):
                 CurrentPodId = pod["pod_id"]
                 print(podName)
 
-    await connection.pod_state_change(pod_id=CurrentPodId, state=enums.PodState.OFFLINE)
-    print(f'[+]{podName} brought offline!')
+                await connection.pod_state_change(pod_id=CurrentPodId, state=enums.PodState.OFFLINE)
+                print(f'[+]{podName} brought offline!')
 

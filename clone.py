@@ -21,17 +21,18 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
     #Get information for current pod to clone
     cnt = 0
     for currentPod in range(podStart,podStop):
-        for pod in pods:
-            if pod["pod_name"]==f"{newPodName}{currentPod}":
+        print('='*20 + f'Gathering info to clone new pod' + '='*20 )
+
+        #Determine if we are creating a new pod or replacing an existing pod
+        if replacePod:
+            for pod in pods:
+                if pod["pod_name"]==f"{newPodName}{currentPod}":
                     podName=pod["pod_name"]
                     CurrentPodId = pod["pod_id"]
-        print('='*20 + f'Gathering info to clone new pod: {podName}' + '='*20 )
-        print()
-        #Determine if we are creating a new pod or replacing an existing pod
-        OldCurrentPodId = CurrentPodId
-        if replacePod:
-             CurrentPodId = CurrentPodId
+                    break
+                
         elif not replacePod:
+            podName = newPodName
             if replacePodNum == 0:
                 #Get next available pod ID number
                 pods = await connection.pod_list()
@@ -39,17 +40,19 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
                 CurrentPodId = nextAvailablePodID
             else:
                 CurrentPodId = replacePodNum + cnt
+        OldCurrentPodId = CurrentPodId
         print('='*20 + f'Cloning to pod ID: {CurrentPodId}' + '='*20)
         cnt += 1
 
-        ans = input(f'**********\nWARNING: You are about to delete pod:{OldCurrentPodId}. podName:{podName}. Do you wish to continue?\n**********(y/n)')
-        if ans.lower() != 'y':
-            print('[]Operation aborted due to use cancelation')
-            return
         #Remove old pod
-        await connection.pod_state_change(pod_id=OldCurrentPodId, state=enums.PodState.OFFLINE)
-        await connection.pod_remove_task(pod_id=OldCurrentPodId, remove_vms=enums.RemoveVMS.DISK)
-        print(f'[+]Successfully removed pod {CurrentPodId}')
+        if replacePod:
+            ans = input(f'**********\nWARNING: You are about to delete pod:{OldCurrentPodId}. podName:{podName}. Do you wish to continue?\n**********(y/n)')
+            if ans.lower() != 'y':
+                print('[]Operation aborted due to use cancelation')
+                return
+            await connection.pod_state_change(pod_id=OldCurrentPodId, state=enums.PodState.OFFLINE)
+            await connection.pod_remove_task(pod_id=OldCurrentPodId, remove_vms=enums.RemoveVMS.DISK)
+            print(f'[+]Successfully removed pod {CurrentPodId}')
 
 
         #Clone pod
@@ -79,7 +82,7 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
                                                            clone_pod_name=f"{newPodName}{currentPod}",pc_clone_specs=pc_clone_specs)
             print(f'[+]Successfully cloned new pod: {newPodName}{currentPod}')
         except Exception as e:
-            print('[-]Possible error when cloning pod: {newPodName}{currentPod}')
+            print(f'[-]Possible error when cloning pod: {newPodName}{currentPod}')
         
         #Set ACLs on new pod
         print('='*20 + 'Setting ACL on new pod' + '='*20 )
