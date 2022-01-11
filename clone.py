@@ -40,7 +40,10 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
                 CurrentPodId = nextAvailablePodID
             else:
                 CurrentPodId = replacePodNum + cnt
-        OldCurrentPodId = CurrentPodId
+        try:
+            OldCurrentPodId = CurrentPodId
+        except:
+            print(f'[-] Pod name mismatch.  Check that pod being replaced has name of {newPodName}')
         print('='*20 + f'Cloning to pod ID: {CurrentPodId}' + '='*20)
         cnt += 1
 
