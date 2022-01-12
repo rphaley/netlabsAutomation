@@ -1,15 +1,15 @@
 #Created by Ryan Haley - DePaul University
-$podNum = 7
+$podNum = 2
 $logon = Get-Content "esxi_settings.txt"
 $vctr = $logon[2]
 
-<#
+
 $vms = "CSEC388_REG_POD{0}_*" -f $podNum
 $dst = "CSEC388_POD{0}" -f $podNum
 $net1 = "388POD{0}_INT" -f $podNum
 $host1 = "CSEC388_REG_POD{0}_Kali" -f $podNum
 $host2 = "CSEC388_REG_POD{0}_Windows*" -f $podNum
-#>
+
 
 <#
 $vms = "CSEC388_FINAL_POD{0}_*" -f $podNum
@@ -19,14 +19,14 @@ $host1 = "CSEC388_FINAL_POD{0}_Kali" -f $podNum
 $host2 = "CSEC388_FINAL_POD{0}_Windows*" -f $podNum
 $net2 = "CSEC395_REG_POD{0}_EXT_VLAN546" -f $podNum
 #>
-
+<#
 $vms = "CSEC_395_POD{0}_*" -f $podNum
 $dst = "CSEC395_POD{0}" -f $podNum
 $net1 = "395POD{0}_INT" -f $podNum
 $net2 = "395POD{0}_EXT_VLAN547" -f $podNum
 $host1 = ""
 $host2 = ""
-
+#>
 
 
 Connect-VIServer -Server $vctr -User $logon[0] -Password $logon[1]
