@@ -1,0 +1,10 @@
+[DEFAULT]
+masterPodName = CSEC999_REG_POD1
+datastore = esxi1_datastore1
+newPodName = CSEC999_REG_POD
+podStart = 1
+podStop = 5
+#true if you want to replace existing pod, false if you want to create new pod
+replacePod = True
+#Set to 0 for next availalbe pod number, if multiple pods this will be the starting pod number; This is only used is replacePod = False
+replacePodNum = 0
