@@ -1,6 +1,7 @@
 #Created by Ryan Haley - DePaul University
 from pprint import pprint
 from netlab import enums
+from setACLs import setACL
 
 async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podStop,replacePod,replacePodNum):
     #Checking to ensure master pod is not deleted
@@ -86,26 +87,14 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             print(f'[+]Successfully cloned new pod: {newPodName}{currentPod}')
         except Exception as e:
             print(f'[-]Possible error when cloning pod: {newPodName}{currentPod}')
-        
-        #Set ACLs on new pod
-        print('='*20 + 'Setting ACL on new pod' + '='*20 )
-        await connection.pod_update(pod_id=CurrentPodId,pod_acl_enabled=True)
-        if '378' in pc_clone_specs[0]['clone_name']:
-            cls_id = 11
-        elif '380' in pc_clone_specs[0]['clone_name']:
-            cls_id = 12
-        elif '388' in pc_clone_specs[0]['clone_name']:
-            cls_id = 3
-        elif '395' in pc_clone_specs[0]['clone_name']:
-            cls_id = 13
-        elif '340' in pc_clone_specs[0]['clone_name']:
-            cls_id = 18
-        elif '594' in pc_clone_specs[0]['clone_name']:
-            cls_id = 15
+
+        #Set ACL on pod
         try:
-            acls = await connection.pod_acl_add(com_id=1, pod_id=CurrentPodId, acc_id=None, cls_id=cls_id, team=None)
-        except:
-            print('Duplicate ACL found. Skipping...')
+            await setACL(connection,CurrentPodId,pc_clone_specs)
+            print(f'[+]Successfully set ACL on pod: {newPodName}{currentPod}')
+        except Exception as e:
+            print(f'[-]Possible error when setting ACL on pod: {newPodName}{currentPod}')
+            print(f'Error {e}')
 
        
     print('complete?')

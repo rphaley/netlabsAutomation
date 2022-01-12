@@ -31,7 +31,6 @@ async def main():
         except:
             print('[-] Could not connect to server.  Is VPN up?')
         if info: print("[+]Successfully connected!")
-        pprint(info)
 
         #Clone PODs
         await podState.bringPodDown(connection,newPodName,podStart,podStop)
