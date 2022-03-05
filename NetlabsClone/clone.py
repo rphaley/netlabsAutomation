@@ -78,7 +78,7 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             tmp['clone_storage_alloc'] = 'ONDEMAND'
             tmp['clone_snapshot'] = 'init'
             pc_clone_specs.append(tmp)
-            print('[+]Master pod parsed successfully')
+        print('[+]Master pod parsed successfully')
         pprint(pc_clone_specs)
         
         try:     
@@ -87,6 +87,7 @@ async def clonePod(connection,masterPodName,datastore,newPodName,podStart,podSto
             print(f'[+]Successfully cloned new pod: {newPodName}{currentPod}')
         except Exception as e:
             print(f'[-]Possible error when cloning pod: {newPodName}{currentPod}')
+            print(e)
 
         #Set ACL on pod
         try:
